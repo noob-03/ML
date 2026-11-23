@@ -1,0 +1,8 @@
+# 재현 과정에서 생기는 큰 파일들 (README의 "재현 방법" 참고)
+datasets/
+datasets_raw/
+runs/
+*.zip
+yolov8n.pt
+__pycache__/
+*.pyc

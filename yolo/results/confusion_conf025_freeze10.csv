@@ -1,0 +1,5 @@
+true\pred,elephant,rhino,zebra,background
+elephant,95,0,0,4
+rhino,1,73,1,0
+zebra,0,0,125,10
+background,10,5,19,0
