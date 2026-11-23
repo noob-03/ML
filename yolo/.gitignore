@@ -2,7 +2,15 @@
 datasets/
 datasets_raw/
 runs/
+runs_*/
 *.zip
 yolov8n.pt
 __pycache__/
 *.pyc
+
+# evaluate.py가 results/ 아래에 만드는 작업 폴더 (테스트 이미지 사본 178장, Ultralytics 그림)
+results/val_runs/
+results/coco_label_test/
+
+# track.py · make_demo_video.py가 H.264로 바꾸기 전에 잠깐 만드는 파일
+video/*_raw.mp4
