@@ -9,6 +9,10 @@
 사용 예:
     python scripts/train.py --mode full     --data datasets/wildlife3/wildlife3.yaml
     python scripts/train.py --mode freeze10 --data datasets/wildlife3/wildlife3.yaml
+    python scripts/train.py --mode freeze10 --seed 1      # 반복 실험: runs/ft_freeze10_s1 에 저장
+
+--seed 0(기본값)은 weights/ 의 모델을 만든 설정과 같고 결과는 runs/ft_<방식> 에 저장된다.
+다른 시드는 runs/ft_<방식>_s<시드> 에 따로 저장되어 기존 결과를 덮어쓰지 않는다.
 """
 
 import argparse
@@ -27,8 +31,10 @@ def main():
     ap.add_argument("--batch", type=int, default=16)
     ap.add_argument("--device", default="cpu", help="GPU가 있으면 0")
     ap.add_argument("--project", default="runs")
+    ap.add_argument("--seed", type=int, default=0, help="난수 시드 (반복 실험용)")
     args = ap.parse_args()
 
+    name = f"ft_{args.mode}" if args.seed == 0 else f"ft_{args.mode}_s{args.seed}"
     model = YOLO(args.weights)          # nc=80(COCO) 헤드 -> 데이터의 nc=3에 맞게 자동 교체
     model.train(
         data=args.data,
@@ -39,10 +45,10 @@ def main():
         freeze=10 if args.mode == "freeze10" else None,
         close_mosaic=5,                 # 마지막 5 epoch는 모자이크 증강 끄고 원본 분포로 마무리
         cache=True,                     # 이미지를 메모리에 올려 CPU 학습 속도 개선
-        seed=0,
+        seed=args.seed,
         deterministic=True,
         project=str(Path(args.project).resolve()),   # 상대 경로면 Ultralytics가 runs/detect 아래로 옮기므로
-        name=f"ft_{args.mode}",
+        name=name,
         exist_ok=True,
         plots=True,
     )
