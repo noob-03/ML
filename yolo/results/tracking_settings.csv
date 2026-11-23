@@ -1,0 +1,7 @@
+imgsz,nms,track_ids,ids_10plus_frames,ids_under_10_frames,short_duplicate,short_edge,short_other
+320,class-wise,20,14,6,3,2,1
+320,agnostic,11,9,2,0,2,0
+416,class-wise,25,11,14,12,1,1
+416,agnostic,14,10,4,3,1,0
+640,class-wise,16,11,5,3,2,0
+640,agnostic,12,10,2,0,2,0
