@@ -1,0 +1,15 @@
+image,class,box_area_ratio,max_covered_by_other_gt
+2 (130).jpg,elephant,0.0048,0.25
+2 (130).jpg,elephant,0.0033,0.59
+2 (227).jpg,elephant,0.0664,0.93
+2 (97).jpg,elephant,0.2203,0.69
+4 (112).jpg,zebra,0.5738,0.82
+4 (138).jpg,zebra,0.2548,0.74
+4 (226).jpg,zebra,0.1836,0.8
+4 (235).jpg,zebra,0.1127,0.68
+4 (294).jpg,zebra,0.0096,0.0
+4 (34).jpg,zebra,0.0166,0.57
+4 (34).jpg,zebra,0.0083,0.32
+4 (366).jpg,zebra,0.1825,0.79
+4 (372).jpg,zebra,0.0129,0.53
+4 (75).jpg,zebra,0.0341,0.95

@@ -3,6 +3,11 @@
 1) fine-tuning 한 모델: 전체·부류별 Precision, Recall, mAP50, mAP50-95 + 혼동행렬·PR 곡선 그림
 2) (선택) --baseline 을 주면, fine-tuning 하기 전 COCO 사전학습 모델이 같은 test 이미지에서
    elephant / zebra 를 얼마나 찾는지도 잰다. rhino 는 COCO 80개 부류에 없어서 원래 모델로는 찾을 수 없다.
+   입력 크기마다 세 가지를 잰다.
+   - coco_pretrained_<크기>                  : test 178장 전부 (rhino 라벨은 뺀 사본)
+   - coco_pretrained_<크기>_no_rhino_images  : 코뿔소가 찍힌 사진을 뺀 나머지
+                                               (두 결과의 elephant 정밀도 차이 = 코뿔소 사진이 만든 오탐의 영향)
+   - coco_on_rhino_images[<크기>]            : 코뿔소 사진에서 신뢰도 0.25 이상으로 낸 박스를 부류별로 센 것
 
 사용 예:
     python scripts/evaluate.py --weights runs/ft_full/weights/best.pt --data datasets/wildlife3/wildlife3.yaml \
@@ -81,27 +86,59 @@ def main():
     if args.baseline:
         base = YOLO(args.baseline)
         data_root = Path(args.data).parent
-        coco_yaml = make_coco_label_copy(data_root, out_dir / "coco_label_test", base.names)
-        for sz in args.baseline_imgsz:
-            b = base.val(data=str(coco_yaml), split="test", imgsz=sz, batch=16, plots=False,
-                         project=str(out_dir / "val_runs"), name=f"test_coco_pretrained_{sz}", exist_ok=True)
-            key = f"coco_pretrained_{sz}"
-            report[key] = summarize(b, base.names)
-            report[key]["note"] = f"imgsz={sz}. rhino는 COCO 부류에 없어 측정 대상에서 제외(탐지 불가)"
+        work = out_dir / "coco_label_test"
+        coco_yaml = make_coco_label_copy(data_root, work, base.names)
 
-        # COCO 모델이 test의 코뿔소 사진을 무엇으로 착각하는지 (conf 0.25 이상 예측 부류 집계)
+        # 코뿔소(우리 번호 1)가 한 마리라도 찍힌 test 사진
         rhino_imgs = [p for p in sorted((data_root / "images" / "test").iterdir())
                       if any(l.split()[0] == "1" for l in
                              (data_root / "labels" / "test" / (p.stem + ".txt")).read_text().splitlines())]
-        boxes, images = Counter(), Counter()
-        for p in rhino_imgs:
-            r = base.predict(str(p), imgsz=max(args.baseline_imgsz), conf=0.25, verbose=False)[0]
-            names = [base.names[int(c)] for c in r.boxes.cls]
-            boxes.update(names)
-            images.update(set(names))
-        report["coco_on_rhino_images"] = {"rhino_images": len(rhino_imgs), "imgsz": max(args.baseline_imgsz),
-                                          "boxes_by_class": dict(boxes.most_common()),
-                                          "images_containing_class": dict(images.most_common())}
+        rhino_names = {p.name for p in rhino_imgs}
+        no_rhino_list = work / "test_no_rhino_images.txt"
+        no_rhino_list.write_text("".join(f"{p.resolve()}\n" for p in sorted((work / "images").iterdir())
+                                         if p.name not in rhino_names))
+        no_rhino_yaml = work / "coco_test_no_rhino.yaml"
+        no_rhino_yaml.write_text(coco_yaml.read_text().replace("test: images", f"test: {no_rhino_list.name}"))
+
+        # 코뿔소 사진을 뺀 같은 사진으로 fine-tuning 모델도 재서, COCO 모델과 elephant·zebra를 맞비교한다
+        ft_list = work / "finetuned_test_no_rhino_images.txt"
+        ft_list.write_text("".join(f"{p.resolve()}\n" for p in sorted((data_root / "images" / "test").iterdir())
+                                   if p.name not in rhino_names))
+        ft_yaml = work / "finetuned_test_no_rhino.yaml"
+        ft_yaml.write_text(f"path: {data_root.resolve()}\ntrain: images/train\nval: images/val\ntest: {ft_list.resolve()}\n"
+                           "names:\n" + "".join(f"  {i}: {n}\n" for i, n in model.names.items()))
+        m = model.val(data=str(ft_yaml), split="test", imgsz=args.imgsz, batch=16, plots=False,
+                      project=str(out_dir / "val_runs"), name=f"test_{args.name}_no_rhino_images", exist_ok=True)
+        report["finetuned_no_rhino_images"] = summarize(m, model.names)
+        report["finetuned_no_rhino_images"]["note"] = (f"imgsz={args.imgsz}. 코뿔소가 찍힌 사진 {len(rhino_imgs)}장을 뺀 "
+                                                       f"test (coco_pretrained_*_no_rhino_images와 같은 사진)")
+
+        n_test = len(list((data_root / "images" / "test").iterdir()))
+        on_rhino = {}
+        for sz in args.baseline_imgsz:
+            for suffix, yaml, note in [
+                ("", coco_yaml, f"imgsz={sz}. test {n_test}장. rhino는 COCO 부류에 없어 측정 대상에서 제외(탐지 불가)"),
+                ("_no_rhino_images", no_rhino_yaml,
+                 f"imgsz={sz}. 코뿔소가 찍힌 사진 {len(rhino_imgs)}장을 뺀 test {n_test - len(rhino_imgs)}장"),
+            ]:
+                key = f"coco_pretrained_{sz}{suffix}"
+                b = base.val(data=str(yaml), split="test", imgsz=sz, batch=16, plots=False,
+                             project=str(out_dir / "val_runs"), name=f"test_{key}", exist_ok=True)
+                report[key] = summarize(b, base.names)
+                report[key]["note"] = note
+
+            # COCO 모델이 test의 코뿔소 사진을 무엇으로 착각하는지 (conf 0.25 이상 예측 부류 집계)
+            boxes, images = Counter(), Counter()
+            for p in rhino_imgs:
+                r = base.predict(str(p), imgsz=sz, conf=0.25, verbose=False)[0]
+                names = [base.names[int(c)] for c in r.boxes.cls]
+                boxes.update(names)
+                images.update(set(names))
+            on_rhino[str(sz)] = {
+                "rhino_images": len(rhino_imgs), "imgsz": sz, "conf": 0.25,
+                "boxes_by_class": dict(boxes.most_common()),
+                "images_containing_class": dict(images.most_common())}
+        report["coco_on_rhino_images"] = on_rhino
 
     path = out_dir / f"test_metrics_{args.name}.json"
     path.write_text(json.dumps(report, indent=2, ensure_ascii=False))

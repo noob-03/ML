@@ -27,18 +27,47 @@
       }
     },
     "speed_ms_per_image": {
-      "preprocess": 0.3871120168548331,
-      "inference": 16.697897241571674,
-      "loss": 7.859550473614454e-05,
-      "postprocess": 0.17100960674091195
+      "preprocess": 0.4267506966304987,
+      "inference": 35.720606966292046,
+      "loss": 9.556741547436268e-05,
+      "postprocess": 0.3841558595501298
     }
+  },
+  "finetuned_no_rhino_images": {
+    "all": {
+      "precision": 0.9676729916732882,
+      "recall": 0.9169841032131618,
+      "mAP50": 0.9742347020614751,
+      "mAP50-95": 0.7559729542973026
+    },
+    "per_class": {
+      "elephant": {
+        "precision": 0.9831921206091535,
+        "recall": 0.9494949494949495,
+        "mAP50": 0.9852083230018367,
+        "mAP50-95": 0.7867787122298411
+      },
+      "zebra": {
+        "precision": 0.952153862737423,
+        "recall": 0.884473256931374,
+        "mAP50": 0.9632610811211135,
+        "mAP50-95": 0.7251671963647643
+      }
+    },
+    "speed_ms_per_image": {
+      "preprocess": 0.434791536583465,
+      "inference": 37.20155993496002,
+      "loss": 9.126016613767042e-05,
+      "postprocess": 0.435554024391873
+    },
+    "note": "imgsz=320. 코뿔소가 찍힌 사진 55장을 뺀 test (coco_pretrained_*_no_rhino_images와 같은 사진)"
   },
   "coco_pretrained_320": {
     "all": {
       "precision": 0.8496911267250664,
       "recall": 0.8766272445642629,
       "mAP50": 0.886887630736453,
-      "mAP50-95": 0.7202420760575046
+      "mAP50-95": 0.7202453088161253
     },
     "per_class": {
       "elephant": {
@@ -51,16 +80,45 @@
         "precision": 0.9825163976579039,
         "recall": 0.8325554566485951,
         "mAP50": 0.95102497160773,
-        "mAP50-95": 0.7573997550436905
+        "mAP50-95": 0.757406220560932
       }
     },
     "speed_ms_per_image": {
-      "preprocess": 0.2762324887636792,
-      "inference": 15.660440893258015,
-      "loss": 5.702808971619469e-05,
-      "postprocess": 0.3184607921342974
+      "preprocess": 0.5008312247191702,
+      "inference": 38.99093499999994,
+      "loss": 8.574157066740033e-05,
+      "postprocess": 1.6158017696656048
     },
-    "note": "imgsz=320. rhino는 COCO 부류에 없어 측정 대상에서 제외(탐지 불가)"
+    "note": "imgsz=320. test 178장. rhino는 COCO 부류에 없어 측정 대상에서 제외(탐지 불가)"
+  },
+  "coco_pretrained_320_no_rhino_images": {
+    "all": {
+      "precision": 0.9669889518220824,
+      "recall": 0.8986726258542571,
+      "mAP50": 0.9717897806386737,
+      "mAP50-95": 0.7867247257950113
+    },
+    "per_class": {
+      "elephant": {
+        "precision": 0.9793962788244216,
+        "recall": 0.9603082146714772,
+        "mAP50": 0.9909007764722052,
+        "mAP50-95": 0.8143305052434483
+      },
+      "zebra": {
+        "precision": 0.9545816248197433,
+        "recall": 0.837037037037037,
+        "mAP50": 0.9526787848051421,
+        "mAP50-95": 0.7591189463465742
+      }
+    },
+    "speed_ms_per_image": {
+      "preprocess": 0.4789651626045573,
+      "inference": 36.80110516260046,
+      "loss": 8.501626318202324e-05,
+      "postprocess": 1.1622109999960202
+    },
+    "note": "imgsz=320. 코뿔소가 찍힌 사진 55장을 뺀 test 123장"
   },
   "coco_pretrained_640": {
     "all": {
@@ -84,37 +142,90 @@
       }
     },
     "speed_ms_per_image": {
-      "preprocess": 1.2615454943813622,
-      "inference": 63.71228662921345,
-      "loss": 6.93202254848749e-05,
-      "postprocess": 0.5219872191012175
+      "preprocess": 2.5081922134826056,
+      "inference": 101.30992247190937,
+      "loss": 7.732583991342795e-05,
+      "postprocess": 2.51281900561986
     },
-    "note": "imgsz=640. rhino는 COCO 부류에 없어 측정 대상에서 제외(탐지 불가)"
+    "note": "imgsz=640. test 178장. rhino는 COCO 부류에 없어 측정 대상에서 제외(탐지 불가)"
+  },
+  "coco_pretrained_640_no_rhino_images": {
+    "all": {
+      "precision": 0.9550906605034002,
+      "recall": 0.934006734006734,
+      "mAP50": 0.9803623986765588,
+      "mAP50-95": 0.8077544677400382
+    },
+    "per_class": {
+      "elephant": {
+        "precision": 0.967231917436865,
+        "recall": 0.9494949494949495,
+        "mAP50": 0.9853455032229349,
+        "mAP50-95": 0.8093686990653405
+      },
+      "zebra": {
+        "precision": 0.9429494035699355,
+        "recall": 0.9185185185185185,
+        "mAP50": 0.9753792941301828,
+        "mAP50-95": 0.8061402364147359
+      }
+    },
+    "speed_ms_per_image": {
+      "preprocess": 1.4925628536571096,
+      "inference": 96.41858840650383,
+      "loss": 0.0001114146315802184,
+      "postprocess": 2.148392089429393
+    },
+    "note": "imgsz=640. 코뿔소가 찍힌 사진 55장을 뺀 test 123장"
   },
   "coco_on_rhino_images": {
-    "rhino_images": 55,
-    "imgsz": 640,
-    "boxes_by_class": {
-      "elephant": 46,
-      "cow": 24,
-      "sheep": 6,
-      "horse": 5,
-      "bird": 4,
-      "bear": 2,
-      "zebra": 2,
-      "giraffe": 2,
-      "person": 1
+    "320": {
+      "rhino_images": 55,
+      "imgsz": 320,
+      "conf": 0.25,
+      "boxes_by_class": {
+        "elephant": 40,
+        "cow": 26,
+        "bear": 5,
+        "sheep": 4,
+        "horse": 4,
+        "giraffe": 1
+      },
+      "images_containing_class": {
+        "elephant": 29,
+        "cow": 22,
+        "bear": 5,
+        "sheep": 4,
+        "horse": 4,
+        "giraffe": 1
+      }
     },
-    "images_containing_class": {
-      "elephant": 39,
-      "cow": 17,
-      "sheep": 6,
-      "horse": 5,
-      "bird": 3,
-      "bear": 2,
-      "zebra": 2,
-      "giraffe": 2,
-      "person": 1
+    "640": {
+      "rhino_images": 55,
+      "imgsz": 640,
+      "conf": 0.25,
+      "boxes_by_class": {
+        "elephant": 46,
+        "cow": 24,
+        "sheep": 6,
+        "horse": 5,
+        "bird": 4,
+        "bear": 2,
+        "zebra": 2,
+        "giraffe": 2,
+        "person": 1
+      },
+      "images_containing_class": {
+        "elephant": 39,
+        "cow": 17,
+        "sheep": 6,
+        "horse": 5,
+        "bird": 3,
+        "bear": 2,
+        "zebra": 2,
+        "giraffe": 2,
+        "person": 1
+      }
     }
   }
 }
